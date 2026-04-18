@@ -1,9 +1,9 @@
 {
-  "name": "4.2.3",
+  "name": "5.2.9",
   "private": true,
   "version": "0.0.0",
   "type": "module",
-  "homepage": "https://obessutill.github.io/5.2.5",
+  "homepage": "https://obessutill.github.io/5.2.9",
   "scripts": {
     "dev": "vite",
     "build": "tsc -b && vite build",
