@@ -1,45 +1,34 @@
-import { Button, Card, Flex, Pill, PillsInput, Select, Text, TextInput } from "@mantine/core";
-import { IconMapPin, IconPlus } from '@tabler/icons-react';
+import { Button, Card, Flex, Pill, PillsInput, Text, TextInput } from "@mantine/core";
+import { IconPlus } from "@tabler/icons-react";
 import { useState } from "react";
 import { useAppDispatch, useAppSelector } from "../store/hooks";
-import {
-    addSkill,
-    removeSkill,
-    selectArea,
-    selectSkills,
-    setArea,
-} from '../store/vacanciesSlice';
+import { addSkill, removeSkill, selectSkills } from "../store/vacanciesSlice";
 
 export const FiltersPanel = () => {
     const dispatch = useAppDispatch();
-    const skills = useAppSelector(selectSkills);
-    const area = useAppSelector(selectArea);
-    const [newSkill, setNewSkill] = useState('');
+    const skills = useAppSelector(selectSkills)
+    const [newSkill, setNewSkill] = useState('')
 
     const handleAddSkill = () => {
-        const trimmedSkill = newSkill.trim();
+        const trimmedSkill = newSkill.trim()
 
         if (!trimmedSkill) {
-            return;
+            return
         }
 
-        dispatch(addSkill(trimmedSkill));
-        setNewSkill('');
-    };
+        dispatch(addSkill(trimmedSkill))
+        setNewSkill('')
+    }
 
     const handleRemoveSkill = (skill: string) => {
-        dispatch(removeSkill(skill));
-    };
-
-    const handleAreaChange = (value: string | null) => {
-        dispatch(setArea(value ?? ''));
+        dispatch(removeSkill(skill))
     }
 
     const handleKeyDown = (event: React.KeyboardEvent<HTMLInputElement>) => {
         if (event.key === 'Enter') {
-            handleAddSkill();
+            handleAddSkill()
         }
-    };
+    }
 
     return (
         <Flex direction="column" gap={16} w={264}>
@@ -49,14 +38,13 @@ export const FiltersPanel = () => {
             style={{
                 backgroundColor: '#FFFFFF',
                 border: '1px solid rgba(15, 15, 16, 0.1)',
-            }}
-            >
+            }}>
                 <Text fw={600} size="sm" c="#0F0F10" mb={12}>
-                    Ключевой навык
+                    Ключевые навыки
                 </Text>
 
-                <Flex gap={8} align='center' mb={12}>
-                    <TextInput
+                <Flex gap={8} align="center" mb={12}>
+                    <TextInput 
                     value={newSkill}
                     onChange={(event) => setNewSkill(event.currentTarget.value)}
                     onKeyDown={handleKeyDown}
@@ -71,21 +59,21 @@ export const FiltersPanel = () => {
                         },
                     }}
                     />
-                        <Button
-                        onClick={handleAddSkill}
-                        radius="md"
-                        size="sm"
-                        p={0}
-                        w={32}
-                        h={32}
-                        styles={{
-                            root: {
-                                backgroundColor: '#74C0FC',
-                            },
-                        }}
-                        >
-                            <IconPlus size={16} />
-                        </Button>
+
+                    <Button
+                    onClick={handleAddSkill}
+                    radius="md"
+                    size="sm"
+                    p={0}
+                    w={32}
+                    h={32}
+                    styles={{
+                        root: {
+                            backgroundColor: '#74C0FC',
+                        },
+                    }}>
+                        <IconPlus size={16} />
+                    </Button>
                 </Flex>
 
                 <PillsInput>
@@ -103,34 +91,6 @@ export const FiltersPanel = () => {
                         ))}
                     </Flex>
                 </PillsInput>
-            </Card>
-
-            <Card
-            radius="lg"
-            p="md"
-            style={{
-                backgroundColor: '#FFFFFF',
-                border: '1px solid rgba(15, 15, 16, 0.1)',
-            }}
-            >
-                <Select 
-                value={area}
-                onChange={handleAreaChange}
-                placeholder="Все города"
-                leftSection={<IconMapPin size={16} color="#868E96" />}
-                radius="md"
-                size="sm"
-                data={[
-                    { value: '', label: 'Все города' },
-                    { value: '1', label: 'Москва' },
-                    { value: '2', label: 'Санкт-Петербург' },
-                ]}
-                styles={{
-                    input: {
-                        borderColor: 'rgba(15, 15, 16, 0.1)'
-                    },
-                }}
-                />
             </Card>
         </Flex>
     )

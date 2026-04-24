@@ -1,68 +1,71 @@
-import { Container, Flex } from "@mantine/core";
-import { SearchSection } from "../components/SearchSection";
-import { FiltersPanel } from "../components/FiltersPanel";
-import { VacancyList } from "../components/VacancyList";
-import { useEffect } from "react";
-import { useSearchParams } from "react-router-dom";
-import { useAppDispatch, useAppSelector } from "../store/hooks";
-import { fetchVacancies, hydrateFiltersFromUrl, selectArea, selectSearch, selectSkills } from '../store/vacanciesSlice'
+import { Container, Flex } from '@mantine/core'
+import { Outlet, useSearchParams } from 'react-router-dom'
+import { useEffect } from 'react'
+
+import { SearchSection } from '../components/SearchSection'
+import { FiltersPanel } from '../components/FiltersPanel'
+import { CityTabs } from '../components/CityTabs'
+import { useAppDispatch, useAppSelector } from '../store/hooks'
+import {
+  hydrateFiltersFromUrl,
+  selectSearch,
+  selectSkills,
+} from '../store/vacanciesSlice'
 
 export const VacanciesPage = () => {
-    const dispatch = useAppDispatch();
-    const [searchParams, setSearchParams] = useSearchParams();
+  const dispatch = useAppDispatch()
+  const [searchParams, setSearchParams] = useSearchParams()
 
-    const search = useAppSelector(selectSearch);
-    const area = useAppSelector(selectArea)
-    const skills = useAppSelector(selectSkills)
+  const search = useAppSelector(selectSearch)
+  const skills = useAppSelector(selectSkills)
 
-    useEffect(() => {
-        const searchFromUrl = searchParams.get('search') ?? ''
-        const areaFromUrl = searchParams.get('area') ?? ''
-        const skillsFromUrl = searchParams.get('skills') 
-            ? searchParams
-                .get('skills')!
-                .split(',')
-                .map((skill) => skill.trim())
-                .filter(Boolean)
-            : []
-            
-            dispatch(hydrateFiltersFromUrl({
-                search: searchFromUrl,
-                area: areaFromUrl,
-                skills: skillsFromUrl,
-            })
-        )
-    }, [dispatch, searchParams])
+  useEffect(() => {
+    const searchFromUrl = searchParams.get('search') ?? ''
 
-    useEffect(() => {
-        const params = new URLSearchParams()
+    const skillsFromUrl = searchParams.get('skills')
+      ? searchParams
+          .get('skills')!
+          .split(',')
+          .map((skill) => skill.trim())
+          .filter(Boolean)
+      : []
 
-        if (search.trim()) {
-            params.set('search', search.trim())
-        }
-
-        if (area) {
-            params.set('area', area)
-        }
-
-        if (skills.length > 0) {
-            params.set('skills', skills.join(','))
-        }
-
-        setSearchParams(params);
-        dispatch(fetchVacancies())
-    }, [dispatch, search, area, skills, setSearchParams])
-
-    return (
-        <div style={{ backgroundColor: '#F1F3F5', minHeight: '100vh' }}>
-            <SearchSection />
-
-            <Container size="lg" py={24}>
-                <Flex align="flex-start" gap={24}>
-                    <FiltersPanel />
-                    <VacancyList />
-                </Flex>
-            </Container>
-        </div>
+    dispatch(
+      hydrateFiltersFromUrl({
+        search: searchFromUrl,
+        skills: skillsFromUrl,
+      })
     )
+  }, [dispatch])
+
+  useEffect(() => {
+    const params = new URLSearchParams()
+
+    if (search.trim()) {
+      params.set('search', search.trim())
+    }
+
+    if (skills.length > 0) {
+      params.set('skills', skills.join(','))
+    }
+
+    setSearchParams(params, { replace: true })
+  }, [search, skills, setSearchParams])
+
+  return (
+    <div style={{ backgroundColor: '#F1F3F5', minHeight: '100vh' }}>
+      <SearchSection />
+
+      <Container size="lg" py={24}>
+        <Flex align="flex-start" gap={24}>
+          <FiltersPanel />
+
+          <div style={{ flex: 1 }}>
+            <CityTabs />
+            <Outlet />
+          </div>
+        </Flex>
+      </Container>
+    </div>
+  )
 }

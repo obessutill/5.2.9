@@ -1,65 +1,51 @@
 import { Group, Pagination, Stack, Text } from "@mantine/core";
-import { useAppDispatch, useAppSelector } from "../store/hooks";
-import { 
-    selectError,
-    selectLoading,
-    selectPage,
-    selectPages,
-    selectVacancies,
-    setPage,
- } from '../store/vacanciesSlice';
- import { VacancyCard } from "./VacancyCard";
- import { VacancyCardSkeleton } from "./VacancyCardSkeleton";
+import { useSearchParams } from "react-router-dom";
+import { VacancyCard } from "./VacancyCard";
+import type { VacanciesResponse } from "../types/vacancy";
 
- export const VacancyList = () => {
-    const dispatch = useAppDispatch();
+interface VacancyListProps {
+    data: VacanciesResponse
+}
 
-    const items = useAppSelector(selectVacancies);
-    const loading = useAppSelector(selectLoading)
-    const error = useAppSelector(selectError);
-    const page = useAppSelector(selectPage);
-    const pages = useAppSelector(selectPages);
+export const VacancyList = ({ data }: VacancyListProps) => {
+    const [searchParams, setSearchParams] = useSearchParams()
+
+    const items = data.items
+    const currentPage = data.page + 1
 
     const handlePageChange = (nextPage: number) => {
-        dispatch(setPage(nextPage));
+        const params = new URLSearchParams(searchParams)
+
+        params.set('page', String(nextPage))
+
+        setSearchParams(params)
+    }
+
+    if (items.length === 0) {
+        return (
+            <Text size="lg" c="#0F0F10" mt="md">
+                Вакансии не найдены
+            </Text>
+        )
     }
 
     return (
         <Stack gap={0} style={{ flex: 1 }}>
-            {loading && 
-            Array.from({ length: 10 }).map((_, index) => (
-                <VacancyCardSkeleton key={index} />
+            {items.map((vacancy) => (
+                <VacancyCard key={vacancy.id} vacancy={vacancy} />
             ))}
 
-            {!loading && error && (
-                <Text size="lg" c="red" mt="md">
-                    {error}
-                </Text>
-            )}
-
-            {!loading && !error && items.length === 0 && (
-                <Text size="lg" c="#0F0F10" mt="md">
-                    Вакансии не найдены
-                </Text>
-            )}
-
-            {!loading && !error && items.length > 0 && (
-                <>
-                {items.map((vacancy) => (
-                    <VacancyCard key={vacancy.id} vacancy={vacancy} />
-                ))}
-
+            {data.pages > 1 && (
                 <Group justify="center" mt="md">
                     <Pagination 
-                    total={pages}
-                    value={page}
+                    total={data.pages}
+                    value={currentPage}
                     onChange={handlePageChange}
                     radius="md"
                     size="md"
                     />
                 </Group>
-                </>
             )}
         </Stack>
     )
- }
+}

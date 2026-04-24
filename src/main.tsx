@@ -3,18 +3,16 @@ import { createRoot } from 'react-dom/client'
 import { MantineProvider } from '@mantine/core';
 import './index.css'
 import '@mantine/core/styles.css';
-import App from './App.tsx'
 import { Provider } from 'react-redux';
+import { RouterProvider } from 'react-router-dom';
 import { store } from './store/store.ts';
-import { BrowserRouter } from 'react-router-dom';
+import { router } from './router.tsx';
 
 createRoot(document.getElementById('root')!).render(
   <StrictMode>
     <Provider store={store}>
       <MantineProvider>
-        <BrowserRouter>
-          <App />
-        </BrowserRouter>
+        <RouterProvider router={router}/>
       </MantineProvider>
     </Provider>
   </StrictMode>,
