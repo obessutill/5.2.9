@@ -5,6 +5,7 @@ import react from '@vitejs/plugin-react'
 // https://vite.dev/config/
 export default defineConfig({
   plugins: [react()],
+  base: '/5.2.9/',
   test: {
     globals: true,
     environment: 'jsdom',
